@@ -1,0 +1,86 @@
+import threading
+import time
+import random
+
+# System state
+system_state = {
+    "routing_rules": {"batch_to_quantum": True},
+    "validation_threshold": 0.5,  # For PoA acceptance
+    "consciousness_mode": "adaptive"
+}
+
+# Logic contract blockchain
+class LogicContract:
+    def __init__(self):
+        self.contracts = []
+
+    def add_contract(self, rule_func):
+        self.contracts.append(rule_func)
+
+    def enforce(self, data, context):
+        for rule in self.contracts:
+            if not rule(data, context):
+                return False
+        return True
+
+logic_chain = LogicContract()
+
+# Consciousness Layer
+class ConsciousnessLayer(threading.Thread):
+    def run(self):
+        while True:
+            # Monitor system metrics (simulated)
+            net_latency = random.random()
+            quantum_load = random.random()
+
+            # Adjust system rules based on state
+            if net_latency > 0.7:
+                system_state["routing_rules"]["batch_to_quantum"] = False
+                print("[Consciousness] Paused data routing due to latency.")
+            else:
+                system_state["routing_rules"]["batch_to_quantum"] = True
+
+            # Dynamic PoA strictness
+            if quantum_load > 0.6:
+                system_state["validation_threshold"] = 0.8
+                print("[Consciousness] Raised PoA threshold.")
+            else:
+                system_state["validation_threshold"] = 0.5
+
+            time.sleep(5)
+
+# Logic Contract Rules
+def contract_allow_routing(data, context):
+    return system_state["routing_rules"]["batch_to_quantum"]
+
+def contract_allow_validation(data, context):
+    return random.random() >= system_state["validation_threshold"]
+
+logic_chain.add_contract(contract_allow_routing)
+logic_chain.add_contract(contract_allow_validation)
+
+# Modified PoA with logic contract check
+class PoAWithLogic(threading.Thread):
+    def __init__(self, port_id):
+        super().__init__()
+        self.port_id = port_id
+
+    def run(self):
+        while True:
+            if not quantum_output_ports[self.port_id].empty():
+                data = quantum_output_ports[self.port_id].get()
+                if logic_chain.enforce(data, {"port": self.port_id}):
+                    print(f"[PoA-LC-{self.port_id}] Logic Validated: {data}")
+                    batching_queues[self.port_id].put(data)
+                else:
+                    print(f"[PoA-LC-{self.port_id}] Rejected by Logic Layer.")
+            time.sleep(1)
+
+# Replace original PoA threads
+threads = [ConsciousnessLayer()]
+for i in range(4):
+    threads.append(PoAWithLogic(i))
+
+# Start all logic layer threads (add to previous ones)
+for thread in threads:
+    thread.start()
